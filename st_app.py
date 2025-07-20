@@ -45,9 +45,9 @@ class ShoppingCart:
 st.title("🛒 Simple Shopping Cart with Images")
 
 # Define products
-laptop = Product("Laptop", 1200, "https://cdn.pixabay.com/photo/2014/05/02/21/47/home-office-336377_1280.jpg")
-mouse = Product("Mouse", 25, "https://cdn.pixabay.com/photo/2014/04/05/11/39/computer-mouse-316875_1280.jpg")
-keyboard = Product("Keyboard", 50, "https://cdn.pixabay.com/photo/2016/11/18/12/43/keyboard-1837265_1280.jpg")
+laptop = Product("Laptop", 1200, "laptop.png")
+mouse = Product("Mouse", 25, "mouse_without_background.png")
+keyboard = Product("Keyboard", 50, "keyboard.png")
 
 # Layout in columns
 col1, col2, col3 = st.columns(3)
