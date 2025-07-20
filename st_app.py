@@ -53,15 +53,15 @@ keyboard = Product("Keyboard", 50, "keyboard.png")
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.image(laptop.image_url, caption="Laptop", use_column_width=True)
+    st.image(laptop.image_url, caption="Laptop", use_container_width=True)
     qty_laptop = st.number_input("Laptops", min_value=0, max_value=10, step=1)
 
 with col2:
-    st.image(mouse.image_url, caption="Mouse", use_column_width=True)
+    st.image(mouse.image_url, caption="Mouse", use_container_width=True)
     qty_mouse = st.number_input("Mice", min_value=0, max_value=10, step=1)
 
 with col3:
-    st.image(keyboard.image_url, caption="Keyboard", use_column_width=True)
+    st.image(keyboard.image_url, caption="Keyboard", use_container_width=True)
     qty_keyboard = st.number_input("Keyboards", min_value=0, max_value=10, step=1)
 
 # Discount code input
