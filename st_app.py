@@ -2,9 +2,10 @@ import streamlit as st
 
 # --- Product class ---
 class Product:
-    def __init__(self, name, price):
+    def __init__(self, name, price, image_url):
         self.name = name
         self.price = price
+        self.image_url = image_url
 
 # --- Shopping Cart class ---
 class ShoppingCart:
@@ -41,20 +42,30 @@ class ShoppingCart:
         return "\n".join(receipt_lines)
 
 # --- App UI ---
-st.title("🛒 Simple Shopping Cart")
+st.title("🛒 Simple Shopping Cart with Images")
 
-# Product catalog
-laptop = Product("Laptop", 1200)
-mouse = Product("Mouse", 25)
-keyboard = Product("Keyboard", 50)
+# Define products
+laptop = Product("Laptop", 1200, "https://cdn.pixabay.com/photo/2014/05/02/21/47/home-office-336377_1280.jpg")
+mouse = Product("Mouse", 25, "https://cdn.pixabay.com/photo/2014/04/05/11/39/computer-mouse-316875_1280.jpg")
+keyboard = Product("Keyboard", 50, "https://cdn.pixabay.com/photo/2016/11/18/12/43/keyboard-1837265_1280.jpg")
 
-# Quantities
-qty_laptop = st.number_input("Quantity of Laptops", min_value=0, max_value=10, step=1)
-qty_mouse = st.number_input("Quantity of Mice", min_value=0, max_value=10, step=1)
-qty_keyboard = st.number_input("Quantity of Keyboards", min_value=0, max_value=10, step=1)
+# Layout in columns
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.image(laptop.image_url, caption="Laptop", use_column_width=True)
+    qty_laptop = st.number_input("Laptops", min_value=0, max_value=10, step=1)
+
+with col2:
+    st.image(mouse.image_url, caption="Mouse", use_column_width=True)
+    qty_mouse = st.number_input("Mice", min_value=0, max_value=10, step=1)
+
+with col3:
+    st.image(keyboard.image_url, caption="Keyboard", use_column_width=True)
+    qty_keyboard = st.number_input("Keyboards", min_value=0, max_value=10, step=1)
 
 # Discount code input
-discount_code = st.text_input("Enter Discount Code (e.g., SAVE10, SAVE20, FREESHIP)")
+st.text_input("Discount Code (SAVE10, SAVE20, FREESHIP)", key="discount_code")
 
 # Checkout button
 if st.button("Checkout"):
@@ -63,6 +74,7 @@ if st.button("Checkout"):
     cart.add_product(mouse, qty_mouse)
     cart.add_product(keyboard, qty_keyboard)
 
+    discount_code = st.session_state.discount_code
     discount = cart.apply_discount_code(discount_code)
     if discount_code and discount == 0:
         st.warning("Invalid discount code.")
