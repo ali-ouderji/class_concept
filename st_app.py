@@ -8,6 +8,8 @@ class Product:
         self.image_url = image_url
 
 # --- Shopping Cart class ---
+import pandas as pd
+
 class ShoppingCart:
     def __init__(self):
         self.items = []
@@ -22,24 +24,24 @@ class ShoppingCart:
         self.discount = codes.get(code.upper(), 0)
         return self.discount
 
-    def total_price(self):
-        subtotal = sum(product.price * qty for product, qty in self.items)
-        discount_amount = subtotal * (self.discount / 100)
-        return round(subtotal - discount_amount, 2)
+    def subtotal(self):
+        return sum(product.price * qty for product, qty in self.items)
 
-    def generate_receipt(self):
-        receipt_lines = []
-        subtotal = 0
+    def total_price(self):
+        return round(self.subtotal() * (1 - self.discount / 100), 2)
+
+    def get_receipt_data(self):
+        data = []
         for product, qty in self.items:
-            line = f"{product.name} x{qty} = ${product.price * qty:.2f}"
-            receipt_lines.append(line)
-            subtotal += product.price * qty
-        receipt_lines.append(f"\nSubtotal: ${subtotal:.2f}")
-        if self.discount:
-            discount_amount = subtotal * (self.discount / 100)
-            receipt_lines.append(f"Discount: {self.discount}% (-${discount_amount:.2f})")
-        receipt_lines.append(f"Total: ${self.total_price():.2f}")
-        return "\n".join(receipt_lines)
+            total = product.price * qty
+            data.append({
+                "Product": product.name,
+                "Quantity": qty,
+                "Unit Price": f"${product.price:.2f}",
+                "Total": f"${total:.2f}"
+            })
+        return pd.DataFrame(data)
+
 
 # --- App UI ---
 st.title("🛒 Simple Shopping Cart with Images")
@@ -47,7 +49,7 @@ st.title("🛒 Simple Shopping Cart with Images")
 # Define products
 laptop = Product("Laptop", 1200, "laptop.png")
 mouse = Product("Mouse", 25, "mouse_without_background.png")
-keyboard = Product("Keyboard", 50, "keyboard.png")
+keyboard = Product("Keyboard", 50, "keyboard_3.jpg")
 
 # Layout in columns
 col1, col2, col3 = st.columns(3)
@@ -68,6 +70,7 @@ with col3:
 st.text_input("Discount Code (SAVE10, SAVE20, FREESHIP)", key="discount_code")
 
 # Checkout button
+# Checkout button
 if st.button("Checkout"):
     cart = ShoppingCart()
     cart.add_product(laptop, qty_laptop)
@@ -79,5 +82,22 @@ if st.button("Checkout"):
     if discount_code and discount == 0:
         st.warning("Invalid discount code.")
 
-    st.subheader("🧾 Receipt")
-    st.text(cart.generate_receipt())
+    st.subheader("🧾 Receipt Summary")
+
+    receipt_df = cart.get_receipt_data()
+    if receipt_df.empty:
+        st.info("Your cart is empty.")
+    else:
+        st.table(receipt_df)
+
+        subtotal = cart.subtotal()
+        total = cart.total_price()
+        discount_amt = subtotal * (cart.discount / 100)
+
+        # Show pricing summary
+        st.markdown("---")
+        st.markdown(f"**Subtotal:** ${subtotal:.2f}")
+        if cart.discount:
+            st.markdown(f"**Discount ({cart.discount}%):** -${discount_amt:.2f}")
+        st.markdown(f"### ✅ Total: ${total:.2f}")
+
